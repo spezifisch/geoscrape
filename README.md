@@ -15,6 +15,8 @@ These are some randomly chosen points and areas.
 
 ### Hexagon neighbors
 
+Get immediate neighbor regions of a location with low overlap.
+
 ```
 Hexagon neighbors of: (52.519957,13.383781)
 ->
@@ -24,6 +26,10 @@ Hexagon neighbors of: (52.519957,13.383781)
 ![p1](img/hex-neigh.png "Hex Neighbors")
 
 ### Divide rectangle into hexagons
+
+Give a rectangle that should be covered. This function generates a list of locations which with 100m radius each cover the whole area with very low overlap.
+We approximate the 100m (or optionally different radius) circle by a hexagon with 100m diameter from corner to corner.
+(Think of the circles in the screenshot as hexagons.)
 
 ```
 Corner locations for rectangle [(52.519957,13.383781), (52.499068,13.417307)]
@@ -35,9 +41,10 @@ Corner locations for rectangle [(52.519957,13.383781), (52.499068,13.417307)]
 
 ### S2 cell neighbors
 
-Here the center of the dark blue cell with 100 m diameter is our location. The darker red trapezoid is the level 15 S2 cell which contains it.
-The other red trapezoids are the immediate neighbors with connecting edges. The trapezoids contain the complete area of the blue cell in all cases.
-This is not necessarily the case when walking the S2 cell neighborhood by iterating over the Hilbert curve by id.
+`get_s2_neighbors_edge()`: Here the center of the dark blue circle with 100 m diameter is our location. The darker red trapezoid is the level 15 S2 cell which contains it.
+The other red trapezoids are the immediate neighbors with connecting edges. The trapezoids contain the complete area of the blue circle in all cases.
+
+`get_s2_neighbors_consecutive()`: The same is not necessarily the case when walking the S2 cell neighborhood by iterating over the Hilbert curve by id.
 
 ```
 S2 cell edge neighbors for (52.5186035847,13.4080994571)
