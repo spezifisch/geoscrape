@@ -141,7 +141,7 @@ class Location:
     def hexagon_neighbors(self, **kwargs):
         aoff = kwargs.get("angle_offset", 30)
         # distance from center over corner to center of next hexagon
-        dist_corner = float(kwargs.get("distance_corner", 200))
+        dist_corner = float(kwargs.get("distance_corner", 2*70))
         # distance over border to center of next hexagon
         dist_border = np.cos(to_radians(30)) * dist_corner
 
@@ -197,7 +197,7 @@ def hexagon_rect(loc_nw, loc_se, **kwargs):
     # angle offset: make east-west move horizontal
     aoff = 30
     # distance from center over corner to center of next hexagon
-    dist_corner = float(kwargs.get("distance_corner", 200))
+    dist_corner = float(kwargs.get("distance_corner", 2*70))
     # distance over border to center of next hexagon
     dist_border = np.cos(to_radians(30)) * dist_corner
     # length of hexagon border
@@ -209,6 +209,9 @@ def hexagon_rect(loc_nw, loc_se, **kwargs):
     total_south = loc_nw.distance_to(loc_se, west_east=False, north_south=True)
     total_east = loc_nw.distance_to(loc_se, west_east=True, north_south=False)
     log.debug("hexagon_rect: distance south %f m, east %f m" % (total_south, total_east))
+
+    if dist_corner == 0:
+        raise ValueError("zero distance")
 
     locs = []
     # go south
