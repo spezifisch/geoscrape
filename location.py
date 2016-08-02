@@ -22,6 +22,11 @@ def to_degrees(theta):
 
 E_RADIUS = 6371e3
 class Location:
+    @staticmethod
+    def from_geojson(geojson):
+        c = geojson["coordinates"]
+        return Location(c[1], c[0])
+
     def __init__(self, lat, lon, alt=0):
         self.lat = lat
         self.lon = lon
@@ -39,6 +44,12 @@ class Location:
 
     def to_cell_id(self, level=15):
         return CellId.from_lat_lng(LatLng.from_degrees(self.lat, self.lon)).parent(level)
+
+    def to_geojson(self):
+        return {
+            "type":             "Point",
+            "coordinates":      [ self.lon, self.lat ],
+        }
 
     def get_s2_neighbors_consecutive(self, radius=10):
         origin = CellId.from_lat_lng(LatLng.from_degrees(self.lat, self.lon)).parent(15)
