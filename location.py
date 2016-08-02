@@ -252,6 +252,40 @@ def hexagon_rect(loc_nw, loc_se, **kwargs):
 
     return locs
 
+class Area:
+    def __init__(self, **kwargs):
+        self.name = kwargs.get("name", "unnamed")
+
+        if "rects" in kwargs:
+            # give a list of rectangular regions
+            for rect in kwargs["rects"]:
+                if not isinstance(rect["nw"], Location) or not isinstance(rect["se"], Location):
+                    raise ValueError("not a Location: %s" % rect)
+
+            self.rects = kwargs["rects"]
+            self.mode = "rects"
+        else:
+            # give a single rectangle
+            self.nw = kwargs["nw"]
+            self.se = kwargs["se"]
+            self.mode = "rect"
+
+            if not isinstance(self.nw, Location) or not isinstance(self.se, Location):
+                raise ValueError("not a Location!")
+
+    def get_hexagon_rect(self, **kwargs):
+        if self.mode == "rect":
+            return hexagon_rect(self.nw, self.se, **kwargs)
+        elif self.mode == "rects":
+            locs = []
+            for rect in self.rects:
+                # get list of locations
+                loc = hexagon_rect(rect["nw"], rect["se"], **kwargs)
+                # add locations which are not already in locs
+                locs = locs + list(set(loc) - set(locs))
+
+            return locs
+
 def cell_rect(**k):
     r = RegionCoverer()
     level = k.get("level", 25)
@@ -298,5 +332,23 @@ if __name__ == "__main__":
     # s2 neighbors by id demo
     cellids = loc.get_s2_neighbors_consecutive()
     print("Neighborhood (ids):")
+    print(cellids)
+    
+    print("\n---")
+
+    # example for Areas
+    print("Area example #1:")
+    # specify north-western and south-eastern corner points
+    a1 = Area(name="ol_one", nw=Location(53.143643, 8.207041), se=Location(53.136774, 8.218954))
+    cellids = a1.get_hexagon_rect()
+    print(cellids)
+
+    print("Area example #2:")
+    # you can also specify a list of rectangular regions
+    a2 = Area(name="ol_two",    rects=[
+                                    {"nw": Location(53.143643, 8.207041), "se": Location(53.136774, 8.218954)}, # part 1
+                                    {"nw": Location(53.137231, 8.224315), "se": Location(53.132804, 8.243674)}, # part 2
+                                ])
+    cellids = a2.get_hexagon_rect()
     print(cellids)
 
