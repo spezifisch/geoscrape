@@ -3,6 +3,7 @@
 import logging
 import numpy as np
 import math
+import random
 
 from s2sphere import *
 
@@ -176,20 +177,35 @@ class Location:
 
         return arc
 
+    def add_noise(self, dist_m):
+        # walk a random distance in a random angle
+        theta = 360.0*random.random()
+        dist_m = dist_m*random.random()
+
+        return self.displace(theta, dist_m)
+
+    def __str__(self):
+        return "(%s,%s)" % (self.lat, self.lon)
+
     def __repr__(self):
         return "(%s,%s)" % (self.lat, self.lon)
 
+    # for sortability ...
     def __eq__(self, other):
         if not isinstance(other, Location):
             return ValueError
 
-        return self.to_cell_id(level=16).__eq__(other.to_cell_id(level=16))
+        return str(self) == str(other)
 
     def __lt__(self, other):
         if not isinstance(other, Location):
             return ValueError
 
         return self.to_cell_id(level=16).__lt__(other.to_cell_id(level=16))
+
+    # for hashability ...
+    def __hash__(self):
+        return str(self).__hash__()
 
 def hexagon_rect(loc_nw, loc_se, **kwargs):
     log.debug("hexagon_rect: (NW->SE) %s, %s" % (loc_nw, loc_se))
